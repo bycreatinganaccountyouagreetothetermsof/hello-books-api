@@ -25,7 +25,20 @@ def handle_books():
         return make_response(f"Book {new_book.title} successfully created", 201)
 
 
-@book_bp.route("/<book_id>", methods=["GET"])
+@book_bp.route("/<book_id>", methods=["GET", "PUT", "DELETE"])
 def handle_book(book_id):
     book = Book.query.get(book_id)
-    return {"id": book.id, "title": book.title, "description": book.description}
+    if not book:
+        return make_response(f"Book {book_id} not found", 404)
+    if request.method == "GET":
+        return {"id": book.id, "title": book.title, "description": book.description}
+    elif request.method == "PUT":
+        request_body = request.get_json()
+        book.title = request_body["title"]
+        book.description = request_body["description"]
+        db.session.commit()
+        return make_response(f"Book {book_id} successfully updated")
+    elif request.method == "DELETE":
+        db.session.delete(book)
+        db.session.commit()
+        return make_response(f"Book {book_id} successfully deleted")
