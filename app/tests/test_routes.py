@@ -31,3 +31,12 @@ def test_get_one_book(client, two_saved_books):
 
     assert response.status_code == 200
     assert response_body == {"id": 1, "title": "Ocean Book", "description": "watr 4evr"}
+
+
+def test_post_one_book(client):
+    pluto = {
+        "title": "pluto",
+        "description": "the bravest book",
+    }
+    response = client.post("/books", json=pluto)
+    assert response.status_code == 201
