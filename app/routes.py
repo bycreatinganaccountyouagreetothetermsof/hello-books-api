@@ -14,12 +14,7 @@ genres_bp = Blueprint("genres", __name__, url_prefix="/genres")
 @books_bp.route("", methods=["GET", "POST"])
 def handle_books():
     if request.method == "GET":
-        return jsonify(
-            [
-                {"id": book.id, "title": book.title, "description": book.description}
-                for book in Book.query.all()
-            ]
-        )
+        return jsonify([book.to_dict() for book in Book.query.all()])
     elif request.method == "POST":
         request_body = request.get_json()
         new_book = Book(
@@ -124,3 +119,20 @@ def handle_genres():
         db.session.commit()
 
         return jsonify(f"Genre {genre.name} was successfully created"), 201
+
+
+@books_bp.route("/<book_id>/assign_genres", methods=["PATCH"])
+def assign_genres(book_id):
+    book = Book.query.get(book_id)
+
+    if book is None:
+        return make_response(f"Book #{book.id} not found", 404)
+
+    request_body = request.get_json()
+
+    for id in request_body["genres"]:
+        book.genres.append(Genre.query.get(id))
+
+    db.session.commit()
+
+    return make_response("Genres successfully added", 200)
