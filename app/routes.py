@@ -1,12 +1,11 @@
-from flask.signals import request_tearing_down
 from app import db
 from app.models.book import Book
 from flask import Blueprint, jsonify, make_response, request
 
-book_bp = Blueprint("book", __name__, url_prefix="/books")
+books_bp = Blueprint("books", __name__, url_prefix="/books")
 
 
-@book_bp.route("", methods=["GET", "POST"])
+@books_bp.route("", methods=["GET", "POST"])
 def handle_books():
     if request.method == "GET":
         return jsonify(
@@ -25,7 +24,7 @@ def handle_books():
         return make_response(f"Book {new_book.title} successfully created", 201)
 
 
-@book_bp.route("/<book_id>", methods=["GET", "PUT", "DELETE"])
+@books_bp.route("/<book_id>", methods=["GET", "PUT", "DELETE"])
 def handle_book(book_id):
     book = Book.query.get(book_id)
     if not book:
