@@ -21,7 +21,7 @@ def create_app(test_config=None):
         app.config["TESTING"] = True
         app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-            "SQLALCHEMY_DATABASE_URI"
+            "SQLALCHEMY_TEST_DATABASE_URI"
         )
 
     db.init_app(app)
@@ -30,9 +30,12 @@ def create_app(test_config=None):
     from app.models.book import Book
     from app.models.author import Author
 
-    from .routes import books_bp, authors_bp
+    from .routes import books_bp
 
     app.register_blueprint(books_bp)
+
+    from .routes import authors_bp
+
     app.register_blueprint(authors_bp)
 
     return app
